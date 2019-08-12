@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1,user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="applicable-device" content="mobile"/>
+    <meta name="robots" content="noindex">
+    <title>{{ survey.title }}</title>
+    <link href="../static/css/jqmobo.css?" rel="stylesheet"/>
+    <link href="../static/css/weui-for-work.min.css" rel="stylesheet"/>
+{#    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>#}
+    <script type="text/javascript" src="../static/js/weui.min.js"></script>
+</head>
+<body>
+<form style="overflow:hidden;">
+    <div id="toptitle"><h1 class="htitle" id="htitle">{{ survey.title }}</h1></div>
+    <div id="divContent" class="divContent">
+        <div id="divDesc" class="formfield"><span class="description">{{ survey.note }}</span></div>
+        <div id="divQuestion">
+            <fieldset class='fieldset'>
+                {% for question in questions %}
+                    <div class="field" id="div{{ loop.index }}" {% if question.type == '文件' %}ext=
+                        {{ question.ext }} size={{ question.size }}{% endif %}
+                         {% if question.is_required %}required="1"{% endif %}
+                         type={{ question.type }} {% if question.attach %}style="display:none;"
+                         attach="{{ question.attach|safe }}" attach_type={{ question.attach_type }}{% endif %}>
+                        {% if question.type == '单项选择' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="ui-controlgroup">
+                                <input type="hidden" id="q{{ question.num|int }}" name="q{{ question.num|int }}">
+                                {% for option in question.options %}
+                                    <div class="ui-radio">
+                                        <span class="jqradiowrapper">
+                                            <a class="jqradio" href="javascript:;"></a>
+                                        </span>
+                                        <div class="label"
+                                             for="q{{ question.num|int }}_{{ loop.index }}">{{ option }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if question.type == '单项填空' %}
+                            <div class='field-label'>{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="beginner_problem"><textarea style="height: {{ question.rows*38 }}px"
+                                                                    id=q{{ question.num|int }}
+                                                                    name=q{{ question.num|int }}></textarea></div>
+                        {% endif %}
+                        {% if question.type == '多项填空' %}
+                            <div class="field-label">
+                                <div style="position:relative;">
+                                    <div style="position:absolute;top:4px;">{{ loop.index }}.</div>
+                                    <div style="margin-left:30px;">
+                                        {% set ns = namespace(model='<input style="max-width:max_widthpx;line-height:20px;padding:5px 4px;font-size:16px;margin:2px 0;;" type="text" class="ui-input-text" id="id" name="name">', index=1, content='') %}
+                                        {% for pice in question.title %}
+                                            {% if '_' == pice|truncate(1, True, '', 0) %}
+                                                {% set pice = ns.model|replace('max_width', '%d'|format(pice|length * 5 + 20))|replace('"id"', 'q%d_%d'|format(question.num, ns.index))|replace('"name"', 'q%d_%d'|format(question.num, ns.index)) %}
+                                                {% set ns.index = ns.index + 1 %}
+                                            {% else %}
+                                                {% set pice = pice|replace(' ', '&nbsp;') %}
+                                            {% endif %}
+                                            {% set ns.content = '%s%s'|format(ns.content, pice) %}
+                                        {% endfor %}
+                                        {{ ns.content|replace('\n', '<div style="margin-top:8px;"></div>')|safe }}
+                                        {% if question.is_required %}<span class="req">*</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if question.type == '下拉单选' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="ui-select">
+                                <div><span>请选择</span>
+                                    <div class="arrowT">
+                                        <div class="arrowt"></div>
+                                    </div>
+                                    <select name="q{{ question.num|int }}" id="q{{ question.num|int }}">
+                                        <option value="请选择">请选择</option>
+                                        {% for option in question.options %}
+                                            <option value={{ option }}>{{ option }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if question.type == '日期' %}
+                            <div class="field-label">{{ loop.index }}. {{ question.title }}
+                                {% if question.is_required %}
+                                    <span class="req">*</span>
+                                {% endif %}
+                            </div>
+                            <div class="ui-input-text selfMess" style="position:relative;">
+                                <input type="text" style="padding-left:25px;" id="q{{ question.num|int }}"
+                                       name="q{{ question.num|int }}" readonly="readonly" data-role="datebox"
+                                       class="datebox">
+                                <img src="../static/image/date@2x.png" alt="" style="position:absolute;top:3px;left:3px;">
+                            </div>
+                        {% endif %}
+                        {% if question.type == '矩阵单选' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div>
+                                <table cellspacing="0" id="divRefTab{{ question.num|int }}" class="matrix-rating"
+                                       style="">
+                                    <colgroup>
+                                        {% for _ in question.options %}
+                                            <col width="{{ 1/question.options|length }}%">
+                                        {% endfor %}
+                                    </colgroup>
+                                    <tbody>
+                                    {% set ns = namespace(title_tag='') %}
+                                    {% for option in question.options %}
+                                        {% set temp = '<th>option</th>'|replace('option', option.text) %}
+                                        {% set ns.title_tag = '%s%s'|format(ns.title_tag, temp) %}
+                                    {% endfor %}
+                                    {% set ns.title_tag = '<tr class="trlabel">options</tr>'|replace('options', ns.title_tag) %}
+                                    {% set ns.option_tag = '' %}
+                                    {% for option in question.options %}
+                                        {% if option.need_fill %}
+                                            {% set temp = '<td><a class="rate-off rate-offlarge" dval=index needfill="1" req="1"></a></td>'|replace('index', loop.index0) %}
+                                        {% else %}
+                                            {% set temp = '<td><a class="rate-off rate-offlarge" dval=index></a></td>'|replace('index', loop.index0) %}
+                                        {% endif %}
+                                        {% set ns.option_tag = '%s%s'|format(ns.option_tag, temp) %}
+                                    {% endfor %}
+                                    {% for title in question.titles %}
+                                        {% if not loop.index0 % 4 %}
+                                            {{ ns.title_tag|safe }}
+                                        {% endif %}
+                                        <tr id="drv{{ question.num|int }}_{{ loop.index }}t">
+                                            <td style="text-align:left;" class="title"
+                                                colspan={{ question.options|length }}>{{ title }}</td>
+                                        </tr>
+                                        <tr tp="d" fid="q{{ question.num|int }}_{{ loop.index }}"
+                                            id="drv{{ question.num|int }}_{{ loop.index }}" rowindex={{ loop.index0 }}>
+                                            {{ ns.option_tag|safe }}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% for title in question.titles %}
+                                <input type="hidden" id="q{{ question.num|int }}_{{ loop.index }}"
+                                       name="q{{ question.num|int }}_{{ loop.index }}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if question.type == '文件' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="file">
+                                <input id=q{{ question.num|int }} type="file" name=q{{ question.num|int }}
+                                       class="selectFile">
+                                <div class="Hbuttom">
+                                    <div id="divVMsg">
+                                        <div class="upBtn"><i class="up_icon"></i>点击上传文件</div>
+                                        <p class="up_detail">不超过{{ question.size|int/1024 }}M</p></div>
+                                </div>
+                            </div>
+                            <div class="uploadmsg" style="color:red;"></div>
+                        {% endif %}
+                        {% if question.type == '多级下拉' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="ui-input-text selfMess" style="position:relative;">
+                                <input type="text" id="q{{ question.num|int }}" value="" name="q{{ question.num|int }}"
+                                       verify="多级下拉" style="padding-left:27px;"
+                                       onclick="show_mpd(this, {{ question.layers }}, {{ question.options }});"
+                                       readonly="readonly">
+                                <img src="../static/image/m-drop-down@2x.png" alt=""
+                                     style="position:absolute;top:3px;left:3px;">
+                            </div>
+                        {% endif %}
+                        <div class="errorMessage"></div>
+                    </div>
+                {% endfor %}
+                <div id="divSubmit" style="padding:0 20px 10px;">
+                    <div><a id="surveySubmit" {% if preview %}class="button blue disabled"{% else %}class="button blue" onclick="ok()" {% endif %}>提交</a></div>
+                </div>
+            </fieldset>
+        </div>
+
+    </div>
+    {#    <input type="hidden" id="q_user_id" name="q_user_id" value={{ current_user.user_id }}/>#}
+    <input type="hidden" id="q_survey_id" name="q_survey_id" value="{{ questions[0].survey_id }}"/>
+    <input type="hidden" id="q_submit_time" name="q_submit_time"/>
+    <input type="hidden" id="q_source" name="q_source" value="{% if request.referrer == None %}链接{% else %}{{ request.referrer }}{% endif %}"/>
+{#    {% if 0 == survey.public|int %}#}
+{#        <input type="hidden" id="q_user_id" name="q_user_id" value="{{ current_user.user_id }}"/>#}
+{#    {% endif %}#}
+</form>
+<div id="shadow" style="display: none; width: 100%; height: 100%; background: rgb(0, 0, 0); position: absolute; z-index: 100; left: 0; top: 0; opacity: 0.5;" onclick="closeWidget(this);"></div>
+<div id="divMatrixRel" style="position: absolute; display: none; width: 80%; margin: 0 10%;" class="ui-input-text">
+    <input type="text" placeholder="请注明..." id="matrixinput" style="min-height: 2em; width: 100%; padding: 0.3em 0.6em;">
+</div>
+<div id="divMatrixHeader" class="divMatrixHeader" style="position: absolute; display: none; font-size: 12px; color: #333"></div>
+<div id="msg" style="display: none;border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 200;">
+    <div style="position:relative;">
+        <a style="background:url(../static/image/bt_closed.gif) no-repeat;width:30px;height:30px;margin:-15px -18px 0 0;display:inline;float:right;cursor:pointer;position:absolute;right:0;" onclick="closeWidget(this);"></a>
+    </div>
+    <div class="content" style="margin-top:91px;text-align: center;">
+        <span id="msg_text"></span>
+    </div>
+</div>
+<div id="mpdDiv" style="display: none; border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 200;">
+    <div style="position:relative;">
+        <a class="close_img" onclick="closeWidget(this);"></a>
+    </div>
+    <div id="mpd" class="content" style="margin-top:20px;">
+        <div id="select_tags"></div>
+        <div class="save_btn">
+            <a class="button_a" href="javascript:">确定</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../static/js/survey.js"></script>
+</body>
+</html>

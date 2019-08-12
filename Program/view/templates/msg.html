@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body, td, th {
+            color: #FFFFFF;
+        }
+
+        body {
+            background-color: #0099CC;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-family: "微软雅黑";
+        }
+
+        .msg {
+            text-align: center;
+            font-size: 16px
+        }
+
+        .face {
+            text-align: center;
+            display: block;
+            font-size: 45px;
+            font-family: "微软雅黑";
+        }
+    </style>
+</head>
+<body>
+<span class="face">&nbsp;&nbsp;&nbsp;{{ face|safe }}</span>
+<p class="title">{{ title }}！<br/>{{ msg }}</p>
+<p class="msg"><span id="second"></span><span>秒后为您跳转到{{ target_page }}。</span></p>
+<script>
+    var t = parseInt({{second|tojson}})||3;
+    function back_time() {
+        if (t >= 0) {
+            document.getElementById('second').innerHTML = t;
+        }
+        t--;
+        if (t === -1) {
+            location.href = {{href|tojson}};
+        }
+        setTimeout('back_time();', 1000);
+    }
+
+    back_time();
+</script>
+</body>
+</html>

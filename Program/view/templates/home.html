@@ -1,0 +1,479 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Home</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1">
+{#    <meta name="viewport" content="height=device-height, minimum-scale=1, maximum-scale=1,user-scalable=no">#}
+    <meta name="renderer" content="webkit|ie-comp|ie-stand"/>
+    <meta name="robots" content="noindex">
+    <link id="ctl01_cssdefault" rel="stylesheet" type="text/css" href="../static/css/default.css"/>
+    <link id="ctl01_quetsioncss" rel="stylesheet" type="text/css" href="../static/css/myquestionnaires.css"/>
+    <link id="ctl01_cssmaster" rel="stylesheet" type="text/css" href="../static/css/wjxmaster.css"/>
+    <style type="text/css">
+        .main-wrapper .survey-wrapper .survey-list .survey-items {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 2px solid #e1ebf5;
+        }
+        .close_btn {
+            background: url(../static/image/bt_closed.gif) no-repeat;
+            width: 30px;
+            height: 30px;
+            margin: -15px -18px 0 0;
+            display: inline;
+            float: right;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+        }
+
+        .content {
+            padding: 10px 7%;
+        }
+
+        .save_btn {
+            margin-top: 20px;
+        }
+
+        .save_btn > .button_a {
+            display: block;
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            background-color: #1ea0fa;
+            border-radius: 4px;
+            font-size: 16px;
+            color: #ffffff;
+        }
+
+        #select_tags div {
+            text-align: center;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<div id="BS">
+    <div class="header">
+        <div class="my-container clearfix">
+            <div id="ctl01_divFreePro" class="logo pull-left">
+                <a href="/" id="ctl01_hrefLogo" class="hover logohover" target="_blank"></a>
+            </div>
+            <div class="user-wrapper pull-right" id="userbutton">
+                <dl class="user-info pull-left">
+                    <dt class="icon user-icon"><em></em></dt>
+                    <dd class="spinner-list">
+                        <a href="javascript:void(0)" class="user-name"><span id="ctl01_lblUserName" style="text-align:center">{{ current_user.username }}</span><span
+                                class="caret"></span></a>
+                        <ul style="width:100px">
+                            <span class="caret-inverted"></span>
+                            <li><a href="/user_center">用户信息</a></li>
+                            <li id="ctl01_hrefUpgrade"><a href="/upgrade">升级</a></li>
+                            <li id="ctl01_liClient"><a href="/help">客服中心</a></li>
+                        </ul>
+                    </dd>
+                </dl>
+                <dl id="ctl01_hrefWjxout" class="user-info pull-left IE-8">
+                    <a class="user-name" href="/logout">
+                        <dt class="icon out-icon"></dt>
+                        <dd class="spinner-list">
+                            <span>退出</span>
+                        </dd>
+                    </a>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="main-wrapper">
+        <div class="survey-wrapper clearfix">
+            <div class="survey-left pull-left" style="width: 100%;">
+                <div id="ctl01_ContentPlaceHolder1_qls" class="survey-list">
+                    {% for survey in surveys %}
+                        <dl class="survey-items" style='z-index:99;position:relative'>
+                            <dt class="item-top">
+                                <div class="pull-left">
+                                    <a href="/preview?id={{ survey._id }}" target="_blank" class="pull-left item-tit">{{ survey.title }}</a>
+                                    <div class="pull-left item-id">ID:{{ survey._id }}</div>
+                                    <a href="/preview?id={{ survey._id }}" target="_blank" class="btn btn-default btn-xs pull-left item-btn">预览问卷</a>
+                                </div>
+                                <div class="pull-right">
+                                {% if survey.status %}
+                                    <div class="pull-left item-runing">●&nbsp;运行中</div>
+                                    <div class="pull-left item-draft" style="display: none;">●&nbsp;未运行</div>
+                                {% else %}
+                                    <div class="pull-left item-runing" style="display: none;">●&nbsp;运行中</div>
+                                    <div class="pull-left item-draft">●&nbsp;未运行</div>
+                                {% endif %}
+                                    <div class="pull-left item-sheet">答卷：{{ survey.count }}</div>
+                                    <div class="pull-right item-data">{{ survey.time }}</div>
+                                </div>
+                            </dt>
+                            <dt class="item-bot">
+                                <div class="process-box pull-left">
+                                    <dl class="process-1 pull-left">
+                                        <dd class="spinner-list">
+                                            <a href="/design?id={{ survey._id }}">
+                                                <i class="icon design-icon"></i>
+                                                设计问卷
+                                                <span class="caret"></span>
+                                            </a>
+                                            <ul>
+                                                <span class="caret-inverted"></span>
+                                                <li><a href="javascript:" target="_blank">Test</a></li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                    <dl class="process-2 pull-left">
+                                        <dd class="spinner-list">
+                                            <a href="javascript:" target="_blank" onclick="show_qr_code_setting_window('{{ survey._id }}');">
+                                                <i class="icon recovery-icon"></i>
+                                                分享问卷
+                                                <span class="caret"></span>
+                                            </a>
+                                            <ul>
+                                                <span class="caret-inverted"></span>
+                                                <li><a href="javascript:" target="_blank">复制链接</a></li>
+                                                <li><a href="javascript:" target="_blank">生成二维码</a></li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                    <dl class="process-3 pull-left">
+                                        <dd class="spinner-list">
+                                            <a href="/summary?id={{ survey._id }}">
+                                                <i class="icon download-icon"></i>
+                                                统计分析
+                                                <span class="caret"></span>
+                                            </a>
+                                            <ul>
+                                                <span class="caret-inverted"></span>
+                                                <li><a href="javascript:" target="_blank">Test</a></li>
+                                            </ul>
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="operation-box pull-right">
+                                    {% if survey.status %}
+                                        <span>
+                                            <a class="pull-left stop-items" href="javascript:" title="此问卷正在运行，点击停止答卷回收" onclick="changeSurveyStatus(this, '{{ survey._id }}', 0);">
+                                            <i class="icon stop-icon"></i>停止</a>
+                                        </span>
+                                        <span>
+                                            <a class="pull-left release-items" style="display: none;" href="javascript:" title="此问卷未运行，点击发布问卷" onclick="changeSurveyStatus(this, '{{ survey._id }}', 1);">
+                                            <i class="icon release-icon"></i>发布</a>
+                                        </span>
+                                    {% else %}
+                                        <span>
+                                            <a class="pull-left stop-items" style="display: none;" href="javascript:" title="此问卷正在运行，点击停止答卷回收" onclick="changeSurveyStatus(this, '{{ survey._id }}', 0);">
+                                            <i class="icon stop-icon"></i>停止</a>
+                                        </span>
+                                        <span>
+                                            <a class="pull-left release-items" href="javascript:" title="此问卷未运行，点击发布问卷" onclick="changeSurveyStatus(this, '{{ survey._id }}', 1);">
+                                            <i class="icon release-icon"></i>发布</a>
+                                        </span>
+                                    {% endif %}
+                                    <a class="pull-left copy-items" href="javascript:" title="点击复制此问卷" onclick="copySurvey('{{ survey._id }}');">
+                                        <i class="icon copy-icon"></i>复制</a>
+                                    <a class="pull-left cutout-items" href="javascript:" title="点击删除此问卷" onclick="delSurvey(this, '{{ survey._id }}');">
+                                        <i class="icon cutout-icon"></i>删除</a>
+                                </div>
+                            </dt>
+                            <dt class="warning-wrapper clearfix"></dt>
+                            </dl>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="padding: 20px;">
+        <div style="color: white;width: 100%;text-align: center;background-color: #1ea0fa;font-size: 16px;height: 46px;border-radius: 5px;cursor: pointer;" onclick="show_new_survey_window();">
+            <span style="font-weight: bold;font-size: 30px;">+</span>
+            <span>创建问卷</span>
+        </div>
+    </div>
+</div>
+<div id="shadow" style="display: none; width: 100%; height: 100%; background: rgb(0, 0, 0); position: absolute; z-index: 100; left: 0; top: 0; opacity: 0.5;"></div>
+<div id="msg" style="width: 80%; height: 60%; left: 10%; display: none; border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 300;">
+    <div class="content" style="margin-top:91px;text-align: center;">
+        <span>正在处理中，请稍候……</span>
+    </div>
+</div>
+<div id="QR_code" style="width: 80%; height: 60%; left: 10%; display: none; border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 300;">
+    <div style="position:relative;">
+        <a class="close_btn" onclick="hide_qr_code_window();"></a>
+    </div>
+    <div class="content" style="text-align: center;">
+        <img alt="二维码" src="" width="25%">
+        <div>链接：
+            <input title="链接" type="text" readonly="readonly"/>
+            <button onclick="open_url(this);">打开</button>
+            <button onclick="copy_url(this);">复制</button>
+        </div>
+    </div>
+</div>
+<div id="QR_code_setting" style="width: 80%; height: 60%; left: 10%; display: none; border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 200;">
+    <div style="position:relative;">
+        <a class="close_btn" onclick="hide_qr_code_setting_window();"></a>
+    </div>
+    <div class="content" style="margin-top:20px;">
+        <div style="font-size: 14px;">
+            <div>二维码有效期：
+                <select id="qr_code_time" title="二维码有效期" style="font-size: 14px; width: 165px;">
+                    <option value="7">7天</option>
+                    <option value="15">15天</option>
+                    <option value="30">1个月</option>
+                    <option value="365">1年</option>
+                    <option value="4017">永久</option>
+                </select>
+            </div>
+        </div>
+        <div class="save_btn">
+            <a class="button_a" href="javascript:">确定</a>
+        </div>
+    </div>
+</div>
+<div id="new_survey" style="width: 80%; height: 60%; left: 10%; display: none; border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 200;">
+    <div style="position:relative;">
+        <a class="close_btn" onclick="hide_new_survey_window();"></a>
+    </div>
+    <div class="content" style="margin-top:20px;">
+        <div id="select_tags" style="font-size: 14px;">
+            <div>问卷名称：<input type="text" id="survey_title" title="问卷名称"></div>
+            <div>问卷说明：<input type="text" id="survey_note" title="问卷类型"></div>
+            <div>问卷类型：
+                <select id="survey_public" title="问卷类型" style="font-size: 14px; width: 165px;">
+                    <option value="1">公开问卷</option>
+                    <option value="0">私密问卷</option>
+                </select>
+            </div>
+        </div>
+        <div class="save_btn" onclick="create_survey();">
+            <a class="button_a" href="javascript:">确定</a>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    const survey_title = document.getElementById('survey_title');
+    const survey_note = document.getElementById('survey_note');
+    const survey_public = document.getElementById('survey_public');
+    const qr_code_time = document.getElementById('QR_code_setting');
+    const msg = document.getElementById('msg');
+    const shadow = document.getElementById('shadow');
+    const qr_code = document.getElementById('QR_code');
+    const qr_code_setting_window = document.getElementById('QR_code_setting');
+    const new_survey_window = document.getElementById('new_survey');
+    const xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    xhr.responseType = 'json';
+    msg.ontouchmove = prevent_touch_move_event;
+    shadow.ontouchmove = prevent_touch_move_event;
+    qr_code.ontouchmove = prevent_touch_move_event;
+    new_survey_window.ontouchmove = prevent_touch_move_event;
+    function show_new_survey_window() {
+        survey_title.value = '';
+        survey_note.value = '';
+        survey_public.value = '1';
+        let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+        shadow.style.top = `${scrollTop}px`;
+        shadow.style.display = '';
+        shadow.onclick = hide_new_survey_window;
+        new_survey_window.style.top = `${document.documentElement.clientHeight * 0.2 + scrollTop}px`;
+        new_survey_window.style.display = '';
+        prevent_slide(true);
+    }
+    function hide_new_survey_window() {
+        new_survey_window.style.display = 'none';
+        shadow.style.display = 'none';
+        prevent_slide(false);
+    }
+    function hide_qr_code_window() {
+        qr_code.style.display = 'none';
+        shadow.style.display = 'none';
+        prevent_slide(false);
+    }
+    function render_survey(survey, scroll = false) {}
+    function show_qr_code_setting_window(survey_id) {
+        qr_code_time.value = '7';
+        qr_code_setting_window.lastElementChild.lastElementChild.setAttribute('onclick', `share_survey('${survey_id}')`);
+        let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+        shadow.style.top = `${scrollTop}px`;
+        shadow.style.display = '';
+        shadow.onclick = hide_qr_code_setting_window;
+        qr_code_setting_window.style.top = `${document.documentElement.clientHeight * 0.2 + scrollTop}px`;
+        qr_code_setting_window.style.display = '';
+        prevent_slide(true);
+    }
+    function hide_qr_code_setting_window() {
+        qr_code_setting_window.style.display = 'none';
+        shadow.style.display = 'none';
+        prevent_slide(false);
+    }
+    function share_survey(survey_id) {
+        xhr.open('GET', `/share?id=${survey_id}&time=${parseInt(qr_code_time.value)}`);
+        xhr.send();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 1) {
+                let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+                msg.style.top = `${scrollTop}px`;
+                msg.style.display = '';
+                shadow.onclick = null;
+            }
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    let response = xhr.response;
+                    if (response['code'] === 1) {
+                        let scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop;
+                        qr_code_setting_window.style.display = 'none';
+                        qr_code.lastElementChild.firstElementChild.src = `data:image/webp;base64,${response['data']}`;
+                        qr_code.lastElementChild.lastElementChild.firstElementChild.value = response['url'];
+                        qr_code.style.top = `${document.documentElement.clientHeight * 0.2 + scrollTop}px`;
+                        msg.style.display = 'none';
+                        qr_code.style.display = '';
+                        shadow.onclick = hide_qr_code_window;
+                        return;
+                    } else {
+                        alert(`分享问卷失败：${response['msg']}`);
+                    }
+                } else {
+                    alert(`分享问卷失败：${xhr.status}`);
+                }
+                msg.style.display = 'none';
+            }
+        }
+    }
+    function open_url(tag) {
+        window.open(tag.previousElementSibling.value);
+    }
+    function copy_url(tag) {
+        tag.previousElementSibling.previousElementSibling.select();
+        let result = document.execCommand('copy');
+        if (result) {
+            alert('复制成功。');
+        } else {
+            alert('你的浏览器不支持此功能。');
+        }
+    }
+    function create_survey() {
+        if (!survey_title.value) {
+            alert('请输入问卷名称。');
+            return;
+        }
+        xhr.open('POST', '/surveys');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(`title=${survey_title.value}&note=${survey_note.value}&public=${survey_public.value}`);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 1) {
+                msg.style.display = '';
+                shadow.onclick = null;
+            }
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    let response = xhr.response;
+                    if (response['code'] === 1) {
+                        location.replace(`/design?id=${response['survey_id']}`);
+                    } else {
+                        alert(`创建问卷失败：${response['msg']}`);
+                    }
+                } else {
+                    alert(`创建问卷失败：${xhr.status}`);
+                }
+                msg.style.display = 'none';
+                shadow.onclick = hide_new_survey_window;
+            }
+        }
+    }
+    function changeSurveyStatus(tag, survey_id, status) {
+        xhr.open('PUT', `surveys?id=${survey_id}&params=${JSON.stringify({'status': status})}`);
+        xhr.send();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    let response = xhr.response;
+                    if (response['code'] === 1) {
+                        //更改问卷状态成功
+                        let span = tag.parentNode;
+                        span.firstElementChild.style.display = 'none';
+                        let status_tag = span.parentNode.parentNode.previousElementSibling.lastElementChild.firstElementChild;
+                        if (status) {
+                            span.previousElementSibling.firstElementChild.style.display = '';
+                            status_tag.style.display = '';
+                            status_tag.nextElementSibling.style.display = 'none';
+                        } else {
+                            span.nextElementSibling.firstElementChild.style.display = '';
+                            status_tag.style.display = 'none';
+                            status_tag.nextElementSibling.style.display = '';
+                        }
+                    } else {
+                        alert(`更改问卷状态失败：${response['msg']}`);
+                    }
+                }
+            }
+        };
+    }
+    function copySurvey(survey_id) {
+        xhr.open('POST', '/surveys');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(`copy_id=${survey_id}`);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    let response = xhr.response;
+                    if (response['code'] === 1) {
+                        location.reload(false);
+                        {#render_survey(response['survey']);#}
+                    } else {
+                        alert(response['msg']);
+                    }
+                }
+            }
+        }
+    }
+    function delSurvey(tag, survey_id) {
+        let r = confirm(`确定删除ID为${survey_id}的问卷吗？\n该操作将删除该问卷及其所有答卷且不可撤销！`);
+        if (r) {
+            xhr.open('DELETE', `/surveys?_id=${survey_id}`);
+            xhr.send();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        let response = xhr.response;
+                        if (response['code'] === 1) {
+                            let survey = tag.parentNode.parentNode.parentNode;
+                            survey.parentNode.removeChild(survey);
+                        } else {
+                            alert(`删除问卷失败：${response['msg']}`);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    function prevent_touch_move_event(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        e.returnValue = false;
+    }
+    function prevent_slide(flag) {
+        if (flag) {
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+            document.body.onkeydown = function (e) {
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                    e.preventDefault();
+                    e.returnValue = false;
+                    e.stopPropagation();
+                    return false;
+                }
+            };
+        } else {
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+            document.body.onkeydown = null;
+            shadow.ontouchstart = null;
+        }
+    }
+</script>
+</body>
+</html>

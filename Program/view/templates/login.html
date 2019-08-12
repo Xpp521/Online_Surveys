@@ -1,0 +1,503 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1,user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="applicable-device" content="mobile"/>
+    <title>在线问卷系统</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-size: 16px;
+            -webkit-user-select: none;
+            -webkit-text-size-adjust: none;
+            font-family: "Microsoft Yahei", helvetica;
+            background: #fff;
+            color: #333;
+            position: relative;
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+        *, *:after, *:before {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        ul, li {
+            list-style: none;
+        }
+        a, button, label, textarea, div, select, option {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            outline: none;
+        }
+        input {
+            outline: none;
+        }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        appearance: none;
+        margin: 0;
+        -moz-appearance: textfield;
+        }
+        a, a:visited {
+            text-decoration: none;
+            color: #45AFE3;
+        }
+        fieldset {
+            border: none;
+        }
+        .toptitle {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 26px 10px 12px;
+            width: 100%;
+            color: #1ea0fa;
+        }
+        .htitle {
+            font-size: 24px;
+            line-height: 32px;
+            font-weight: bold;
+            margin: 0;
+            /*padding: 0;*/
+            text-align: center;
+        }
+        .field {
+            clear: both;
+            padding: 10px 14px;
+            margin: 10px 6px;
+            border: 1px solid #ffffff;
+        }
+        .field-label {
+            position: relative;
+            font-size: 16px !important;
+            font-weight: bold;
+            padding: 0 0 8px 0 !important;
+            display: block;
+            word-wrap: break-word;
+            /*overflow: hidden;*/
+        }
+        .ui-input-text {
+            border: 1px solid #e0e0e0;
+            margin: 5px 0;
+            background-color: #fff;
+            padding: 0;
+            border-radius: 4px;
+        }
+        .ui-input-text input, .ui-input-text textarea {
+            width: 100%;
+            background-color: #fff;
+            border: none !important;
+            border-radius: 2px;
+            padding: 10px;
+            font-size: 14px;
+            display: inline-block;
+            margin: 0;
+            -webkit-appearance: none;
+        }
+        .ui-text input:focus, .ui-input-text input:focus, .ui-input-text textarea:focus {
+            /*     box-shadow: 0 0 12px #3388cc; */
+            outline: none;
+        }
+        .errorMessage {
+            position: relative;
+            padding-left: 12px;
+            color: Red;
+            line-height: 38px;
+            background-color: #ffe5e0;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 9px;
+            transition: all 1s ease 0s;
+        }
+        .blue, blue:visited {
+            color: #F7F7F7;
+            background: #1ea0fa;
+        }
+        .button {
+            width: 100%;
+            display: block;
+            margin: 10px 0;
+            outline: none;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            padding: 9px 0 9px;
+            border-radius: .2em;
+        }
+        .switch {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3a6eb7;
+            text-decoration: underline;
+        }
+        .underline {
+            border-bottom: 1px dashed #ccc;
+        }
+        a.disabled {
+            pointer-events: none;
+            filter: alpha(opacity=50); /*IE滤镜，透明度50%*/
+            -moz-opacity: 0.5; /*Firefox私有，透明度50%*/
+            opacity: 0.5; /*其他，透明度50%*/
+        }
+    </style>
+</head>
+<body>
+<form id="login_form" style="overflow:hidden;" action="">
+    <div class="underline"><h1 class="toptitle htitle">在线问卷系统 - 登录</h1></div>
+    <div>
+        <fieldset class='fieldset'>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>用户名：{% if register_status %}<a href="javascript:" class="switch" onclick="switch2register(1);">还没有账号？去注册</a>{% endif %}</div>
+                <div class='ui-input-text' style='position:relative;'><input title="用户名" type='text' id='name' value='{{ last_username }}' placeholder="用户名"/></div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>密&nbsp;&nbsp;&nbsp;&nbsp;码：<a href="javascript:" class="switch" tabindex="-1" onclick="switch2reset(1);">忘记密码</a></div>
+                <div class='ui-input-text' style='position:relative;'><input title="密码" type='password' id='pwd' placeholder="密码"/>
+                </div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label' style="display: inline;">验&nbsp;证&nbsp;码：</div>
+                <div class='ui-input-text' style='position: relative; display: inline-block;'><input title="验证码" type='text' id='l_captcha' onkeypress="enter_login(event);"/></div>
+                <img alt="" src="">
+                <a href="javascript:" title="看不清？换一张" class="switch" onclick="request_r_code();">看不清？换一张</a>
+                <div class='errorMessage'></div>
+            </div>
+            <div style="padding:0 20px 10px;">
+                <div><a class="button blue" onclick="click_login();">登录</a></div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+{% if register_status %}
+<form id="register_form" style="overflow: hidden; display: none;" action="">
+    <div class="underline"><h1 class="toptitle htitle">在线问卷系统 - 注册</h1></div>
+    <div>
+        <fieldset class='fieldset'>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>用户名：<a href="javascript:" class="switch" onclick="switch2register(0);">已有账号？去登录</a></div>
+                <div class='ui-input-text' style='position:relative;'><input title="用户名" type='text' id='r_name' name='r_username' placeholder="用户名"/></div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>密&nbsp;&nbsp;&nbsp;&nbsp;码：</div>
+                <div class='ui-input-text' style='position:relative;'><input title="密码" type='password' id='r_pwd' name='r_password' placeholder="密码"/></div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>确认密码：</div>
+                <div class='ui-input-text' style='position:relative;'>
+                    <input title="确认密码" type='password' id='confirm_pwd' name='confirm_password' placeholder="再输入一次密码"/>
+                </div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>邮&nbsp;&nbsp;&nbsp;&nbsp;箱：</div>
+                <div class='ui-input-text' style='position:relative;'><input title="邮箱" type='text' id='email' name='email' placeholder="该邮箱将作为找回密码等操作的工具"/></div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label' style="display: inline;">注&nbsp;册&nbsp;码：</div>
+                <div class='ui-input-text' style='position: relative; display: inline-block;'>
+                    <input title="注册码" type='text' id='r_code' name='r_code'/>
+                </div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label' style="display: inline;">验&nbsp;证&nbsp;码：</div>
+                <div class='ui-input-text' style='position: relative; display: inline-block;'>
+                    <input title="验证码" type='text' id='r_captcha' name='captcha' onkeypress="enter_register(event);"/>
+                </div>
+                <img alt="" src="">
+                <a href="javascript:" title="看不清？换一张" class="switch" onclick="request_r_code();">看不清？换一张</a>
+                <div class='errorMessage'></div>
+            </div>
+            <div style="padding:0 20px 10px;">
+                <div><a class="button blue" onclick="click_register();">注册</a></div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+{% endif %}
+<form id="reset_form" style="overflow: hidden; display: none;" action="">
+    <div class="underline"><h1 class="toptitle htitle">在线问卷系统 - 找回密码</h1></div>
+    <div>
+        <fieldset class='fieldset'>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>用户名/邮箱：<a tabindex="-1" href="javascript:" class="switch" onclick="switch2reset(0);">返回登录</a></div>
+                <div class='ui-input-text' style='position:relative;'><input title="用户名或注册邮箱" type='text' id='name_or_email' value='{{ last_username }}' placeholder="输入注册时的用户名或邮箱"/></div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label' style="display: inline;">验&nbsp;证&nbsp;码：</div>
+                <div class='ui-input-text' style='position: relative; display: inline-block;'><input title="验证码" type='text' id='re_captcha' onkeypress="enter_reset(event);"/></div>
+                <img alt="验证码" src="">
+                <a href="javascript:" title="看不清？换一张" class="switch" onclick="request_r_code();">看不清？换一张</a>
+                <div class='errorMessage'></div>
+            </div>
+            <div style="padding:0 20px 10px;">
+                <div><a id="reset_btn" class="button blue" onclick="click_reset();">找回密码<i style="display: none;">90</i><i style="display: none;">s</i></a></div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+    const login_form = document.getElementById('login_form');
+    const reset_form = document.getElementById('reset_form');
+    const name = document.getElementById('name');
+    const pwd = document.getElementById('pwd');
+    const l_captcha = document.getElementById('l_captcha');
+    const name_or_email = document.getElementById('name_or_email');
+    const re_captcha = document.getElementById('re_captcha');
+    const reset_btn = document.getElementById('reset_btn');
+    const xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    xhr.responseType = 'json';
+    const r_code_xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    r_code_xhr.responseType = 'json';
+    let captcha = l_captcha;
+    request_r_code();
+    init();
+    function init() {
+        if (name.value) {
+            pwd.focus();
+        } else {
+            name.focus();
+        }
+        r_code_xhr.onreadystatechange = function () {
+            if (r_code_xhr.readyState === 4) {
+                if (r_code_xhr.status === 200) {
+                    let response = r_code_xhr.response;
+                    if (response['code'] === 1) {
+                        captcha.parentNode.nextElementSibling.src = `data:image/webp;base64,${response['data']}`;
+                    }
+                }
+            }
+        };
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    let response = xhr.response;
+                    if (response['code'] === 1) {
+                        location.replace(response['href']);
+                    } else {
+                        alert(response['msg']);
+                    }
+                }
+            }
+        };
+    }
+    function request_r_code() {
+        r_code_xhr.open('GET', '/captcha');
+        r_code_xhr.send();
+    }
+    function click_login() {
+        if (!name.value) {
+            name.parentNode.nextElementSibling.innerHTML = '请填写用户名';
+            return;
+        } else {
+            name.parentNode.nextElementSibling.innerHTML = '';
+        }
+        if (!pwd.value) {
+            pwd.parentNode.nextElementSibling.innerHTML = '请输入密码';
+            return;
+        } else {
+            pwd.parentNode.nextElementSibling.innerHTML = '';
+        }
+        if (!l_captcha.value) {
+            l_captcha.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = '请填写验证码';
+            return;
+        } else {
+            l_captcha.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = '';
+        }
+        xhr.open('POST', '');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(`username=${name.value}&password=${pwd.value}&captcha=${l_captcha.value}`);
+    }
+    function enter_login(e) {
+        if (e.key === 'Enter' || e.which === 13) {
+            click_login();
+        }
+    }
+    function switch2reset(flag) {
+        if (flag) {
+            login_form.style.display = 'none';
+            reset_form.style.display = '';
+            captcha = re_captcha;
+            request_r_code();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        let response = xhr.response;
+                        if (response['code'] === 1) {
+                            reset_btn.firstElementChild.style.display = '';
+                            reset_btn.lastElementChild.style.display = '';
+                            let num = setInterval('reset_btn.firstElementChild.innerHTML = `${parseInt(reset_btn.firstElementChild.innerHTML) - 1}`', 1000);
+                            setTimeout(`reset_btn.classList.remove("disabled"); reset_btn.firstElementChild.style.display = "none"; reset_btn.lastElementChild.style.display = 'none'; reset_btn.firstElementChild.innerHTML = "90"; window.clearInterval(${num});`, 90000);
+                        } else {
+                            reset_btn.classList.remove('disabled');
+                        }
+                        alert(xhr.response['msg']);
+                    }
+                }
+            }
+        } else {
+            reset_form.style.display = 'none';
+            login_form.style.display = '';
+            captcha = l_captcha;
+            request_r_code();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        let response = xhr.response;
+                        if (response['code'] === 1) {
+                            location.replace(response['href']);
+                        } else {
+                            alert(response['msg']);
+                        }
+                    }
+                }
+            };
+        }
+    }
+    function click_reset() {
+        let name_or_email_value = name_or_email.value;
+        if (name_or_email_value) {
+            name_or_email.parentNode.nextElementSibling.innerHTML = '';
+        } else {
+            name_or_email.parentNode.nextElementSibling.innerHTML = '请输入用户名或注册邮箱。';
+            return;
+        }
+        if (captcha.value) {
+            captcha.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = '';
+        } else {
+            captcha.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = '请输入验证码。';
+            return;
+        }
+        xhr.open('POST', '/reset');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        let data = name_or_email_value.match(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/) ? `email=${name_or_email_value}&captcha=${captcha.value}` : `name=${name_or_email_value}&captcha=${captcha.value}`;
+        xhr.send(data);
+        reset_btn.classList.add('disabled');
+    }
+    function enter_reset(e) {
+        if (e.key === 'Enter' || e.which === 13) {
+            click_reset();
+        }
+    }
+</script>
+{% if register_status %}
+<script type="text/javascript">
+    const register_form = document.getElementById('register_form');
+    const r_name = document.getElementById('r_name');
+    const r_pwd = document.getElementById('r_pwd');
+    const email = document.getElementById('email');
+    const confirm_pwd = document.getElementById('confirm_pwd');
+    const r_code = document.getElementById('r_code');
+    const r_captcha = document.getElementById('r_captcha');
+    function switch2register(flag) {
+        if (flag) {
+            captcha = r_captcha;
+            login_form.style.display = 'none';
+            register_form.style.display = '';
+            request_r_code();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        let response = xhr.response;
+                        if (response['code'] === 1) {
+                            alert(response['msg']);
+                            switch2register(false);
+                            name.value = r_name.value;
+                            pwd.focus();
+                        } else {
+                            alert(response['msg']);
+                        }
+                    }
+                }
+            };
+        } else {
+            captcha = l_captcha;
+            login_form.style.display = '';
+            register_form.style.display = 'none';
+            request_r_code();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        let response = xhr.response;
+                        if (response['code'] === 1) {
+                            location.replace(response['href']);
+                        } else {
+                            alert(response['msg']);
+                        }
+                    }
+                }
+            };
+        }
+    }
+    function click_register() {
+        if (!r_name.value) {
+            r_name.parentNode.nextElementSibling.innerHTML = '请输入用户名';
+            r_name.scrollIntoView();
+            return;
+        } else {
+            r_name.parentNode.nextElementSibling.innerHTML = '';
+        }
+        if (!r_pwd.value) {
+            r_pwd.parentNode.nextElementSibling.innerHTML = '请输入密码';
+            r_pwd.scrollIntoView();
+            return;
+        } else {
+            r_pwd.parentNode.nextElementSibling.innerHTML = '';
+        }
+        if (confirm_pwd.value !== r_pwd.value) {
+            confirm_pwd.parentNode.nextElementSibling.innerHTML = '2次输入的密码不一致';
+            confirm_pwd.scrollIntoView();
+            return;
+        } else {
+            confirm_pwd.parentNode.nextElementSibling.innerHTML = '';
+        }
+        if (!email.value) {
+            email.parentNode.nextElementSibling.innerHTML = '请输入邮箱';
+            email.scrollIntoView();
+            return;
+        } else if (!email.value.match(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/)) {
+            email.parentNode.nextElementSibling.innerHTML = '邮箱格式错误';
+            email.scrollIntoView();
+            return;
+        } else {
+            email.parentNode.nextElementSibling.innerHTML = '';
+        }
+        if (!r_code.value) {
+            r_code.parentNode.nextElementSibling.innerHTML = '请输入注册码';
+            r_code.scrollIntoView();
+            return;
+        } else {
+            r_code.parentNode.nextElementSibling.innerHTML = '';
+        }
+        if (!r_captcha.value) {
+            r_captcha.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = '请输入验证码';
+            r_captcha.scrollIntoView();
+            return;
+        } else {
+            r_captcha.parentNode.nextElementSibling.nextElementSibling.nextElementSibling.innerHTML = '';
+        }
+        xhr.open('POST', '/users');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(`name=${r_name.value}&pwd=${r_pwd.value}&email=${email.value}&r_code=${r_code.value}&captcha=${r_captcha.value}`);
+    }
+    function enter_register(e) {
+        if (e.key === 'Enter' || e.which === 13) {
+            click_register();
+        }
+    }
+</script>
+{% endif %}
+</body>
+</html>

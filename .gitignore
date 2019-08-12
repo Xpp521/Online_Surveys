@@ -1,0 +1,17 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+__pycache__/
+out
+gen
+
+Program/controller/api.py
+Program/model/5bea34c8f353ef85ab998725/
+Program/model/5c1eda0fd25c97159484f95f/
+Program/model/5c1f8b5cd25c971df81b2718/
+Program/model/5c2225c2d25c97056851e5f8/
+Program/model/5d1bf0f0d25c97022019f268/
+Program/model/5c1469fcd25c972f0c233b50/

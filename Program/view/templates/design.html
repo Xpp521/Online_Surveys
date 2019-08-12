@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1,user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="applicable-device" content="mobile"/>
+    <meta name="robots" content="noindex">
+    <title>编辑问卷</title>
+    <link rel="stylesheet" href="../static/css/design.css">
+</head>
+<body style="background-color: rgb(242, 243, 244);position: static;">
+    <div id="mod_header" style="display: none; position: absolute; width: 100%; z-index: 300; background-color: rgb(255, 255, 255);">
+        <div style="background-color: #1ea0fa; color: #F7F7F7; line-height: 45px; font-size: 18px;">
+            <div style="cursor: pointer; display: inline;" onclick="hide_header_editor(true);">
+                <span style="padding-left: 10px;">&lt;</span>
+                <span>返回</span>
+            </div>
+        </div>
+        <div class="mod__fieldset" style="padding-top: 15px;">
+            <div class="mod__legend"><span class="bt_req">*</span>问卷名称</div>
+            <div class="mod__input">
+                <input type="text" placeholder="请输入问卷名称" value="{{ title }}">
+            </div>
+            <div class="errorMessage"></div>
+        </div>
+        <div class="mod__fieldset" style="padding-top: 15px;">
+            <div class="mod__legend">问卷说明</div>
+            <div class="mod__input" style="margin-bottom: 0">
+                <textarea rows="2" cols="20" placeholder="请输入说明" onkeypress="enter_hide_header_editor(event);">{{ note }}</textarea>
+            </div>
+        </div>
+        <div class="mod__setting">
+            <div class="mod__body">
+                <div class="form_button" style="display: flex;">
+                    <h2>问卷类型</h2>
+                    <select id="survey_public" class="ui-select-box" style="width: 35%;" title="问卷类型">
+                        <option value="1">公开问卷</option>
+                        <option value="0">私密问卷</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div style="padding:0 20px 10px;">
+            <div><a class="button blue" onclick="hide_header_editor();">确定</a></div>
+        </div>
+    </div>
+    <div id="content" style="overflow: auto;">
+        <div id="surveyHeader" tabindex="-1" style="float: left;width: 100%;margin-bottom: 10px;" onblur="hide_edit_menu(this);">
+            <div style="padding: 20px 12px;background-color: white" onclick="show_edit_menu(this);">
+                <div style="color: #313233; font-size: 20px; text-align: center; font-weight: bold">{{ title }}</div>
+                <div class="survey-description">{{ note }}</div>
+                <div class="survey-description">
+                    <span style="display: none;">{{ public }}</span>
+                    <span>{% if public %}公开问卷{% else %}私密问卷{% endif %}</span>
+                </div>
+            </div>
+            <div class="dropDownMenu" onclick="show_header_editor();" style="display: none;">
+                <ul style="padding: 0; display: flex; justify-content: center">
+                    <li style="float: none;">
+                        <span class="list_edit">
+                            <div class="list_editbg"></div>
+                            <div class="list_word">编辑</div>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="divContent" class="divContent">
+        <div id="divQuestion">
+            <fieldset class="fieldset" id="fieldset1">
+                <div><ul class="q_list" id="question_list"></ul></div>
+                <div style="padding: 20px;">
+                    <div style="border: 1px dashed #ccc; width: 100%; text-align: center; background-color: white; font-size: 16px; height: 46px; cursor: pointer;" onclick="show_type_selector();">
+                        <span style="font-weight: bold;font-size: 30px;">+</span>
+                        <span>添加题目</span>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    </div>
+    <div id="select_type" style="display: none; border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 200; width: 80%; left: 10%;">
+        <div class="scroll_wrap">
+            <div class="QuestionsBox_li Q_Back default-page">
+                <div class="item_title">请选择题型</div>
+                <div class="pdWrap">
+                    <ul class="add_Q_list">
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_Single"></div>
+                            <p>单项选择</p>
+                        </li>
+                        <script id="useless">let questions = {{ questions|tojson }};const survey_id = '{{ survey_id }}';</script>
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_PullDown"></div>
+                            <p>下拉单选</p>
+                        </li>
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_MPD"></div>
+                            <p>多级下拉</p>
+                        </li>
+                    </ul>
+                    <ul class="add_Q_list">
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_Blank"></div>
+                            <p>单项填空</p>
+                        </li>
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_matrix_fill"></div>
+                            <p>多项填空</p>
+                        </li>
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_matrix_single"></div>
+                            <p>矩阵单选</p>
+                        </li>
+                    </ul>
+                    <ul class="add_Q_list">
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_matrix_multiple"></div>
+                            <p>矩阵多选</p>
+                        </li>
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_data"></div>
+                            <p>日期</p>
+                        </li>
+                        <li onclick="show_question_editor(null, this.lastElementChild.innerHTML);">
+                            <div class="q_ico ico_file"></div>
+                            <p>文件</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="mod_question" style="overflow: auto; display: none; background: rgb(255, 255, 255); position: absolute; width: 100%; top: 0; z-index: 300;">
+        <div style="background-color: #1ea0fa; color: #F7F7F7; line-height: 45px; font-size: 18px;">
+            <div style="cursor: pointer; display: inline;" onclick="hide_question_editor(true);">
+                <span style="padding-left: 10px;">&lt;</span>
+                <span>返回</span>
+            </div>
+        </div>
+        <div id="q_title" style="padding-bottom: 20px;">
+            <div style="font-size: 12px; padding: 0 20px; color: #ABAFB2">
+                <div style="line-height: 28px;">
+                    <span class="bt_req">*</span>
+                    <span>标题</span>
+                </div>
+            </div>
+            <div class="page__content">
+                <div class="mod__title">
+                    <div class="mod__input">
+                        <textarea placeholder="请输入标题" autoheight="true" style="height: 61px;"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="errorMessage"></div>
+        </div>
+        <div id="q_titles" style="display: none; padding-bottom: 20px;">
+            <div style="font-size: 12px; padding: 0 20px; color: #ABAFB2">
+                <div style="line-height: 28px;">
+                    <span class="bt_req">*</span>
+                    <span>问题</span>
+                </div>
+            </div>
+            <div class="page__content">
+                <div class="mod__title">
+                    <div class="mod__input">
+                        <textarea placeholder="请输入问题（每行一个）" autoheight="true"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="errorMessage"></div>
+        </div>
+        <div id="q_options" style="display: none; padding-bottom: 20px;">
+            <div style="font-size: 12px; padding: 0 20px; color: #ABAFB2">
+                <div style="line-height: 28px;">
+                    <span class="bt_req">*</span>
+                    <span>选项</span>
+                </div>
+            </div>
+            <div class="page__content">
+                <div class="mod__title">
+                    <div class="mod__input">
+                        <textarea placeholder="请输入选项（每行一个）" autoheight="true"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="errorMessage"></div>
+        </div>
+        <div id="q_ext" style="display: none; padding-bottom: 20px;">
+            <div style="font-size: 12px; padding: 0 20px; color: #ABAFB2">
+                <div style="line-height: 28px;">
+                    <span class="bt_req">*</span>
+                    <span>文件类型</span>
+                </div>
+            </div>
+            <div class="page__content">
+                <div class="mod__title">
+                    <div class="mod__input">
+                        <textarea placeholder="请输入文件扩展名（每行一个）" autoheight="true"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="errorMessage"></div>
+        </div>
+        <div id="questionSetting" class="mod__setting">
+            <div class="break-line-tit">设置</div>
+            <div class="mod__body">
+                <div id="q_is_required" class="form_button" style="display: flex;">
+                    <h2>此题目必须回答</h2>
+                    <span class="switch-mobile qradio off" onclick="change_slider_status(this);"><span class="slider"></span></span>
+                </div>
+                <div id="q_rows" class="form_button" style="display: none;">
+                    <h2>输入框行数</h2>
+                    <select class="ui-select-box" style="width: 25%;" title="">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+                <div id="q_size" class="form_button" style="display: none;">
+                    <h2>文件大小限制</h2>
+                    <select class="ui-select-box" style="width: 25%;" title="">
+                        <option value="1024">1M</option>
+                        <option value="2048">2M</option>
+                        <option value="3072">3M</option>
+                        <option value="4096">4M</option>
+                        <option value="5120">5M</option>
+                        <option value="6144">6M</option>
+                        <option value="7168">7M</option>
+                        <option value="8192">8M</option>
+                        <option value="9216">9M</option>
+                        <option value="10240">10M</option>
+                    </select>
+                </div>
+                <div id="q_layers" class="form_button" style="display: none;">
+                    <h2>选项级数</h2>
+                    <select class="ui-select-box" style="width: 25%;" title="" onchange="change_layer_num(this);">
+                        <option value="2">2级</option>
+                        <option value="3">3级</option>
+                        <option value="4">4级</option>
+                        <option value="5">5级</option>
+                    </select>
+                </div>
+                <div id="logic_container" class="form_button logic-container remove-pseudo-class" style="display: none; justify-content: center;" onclick="show_logic_setting(this);">
+                    <h2 style="color: #929292;">逻辑设置</h2>
+                    <i class="logic_setting" style="margin-left: 5px; align-self: center; width: 6px; height: 10px; background-size: 6px 10px;"></i>
+                </div>
+                <div id="q_attach" class="form_button">
+                    <h2>显示条件</h2>
+                    <div style="cursor: pointer;" class="fb_right" onclick="show_attach_editor(this);">
+                        <input type="hidden" id="q_attach_text">
+                        <input type="hidden" id="q_attach_type">
+                        <span style="font-size: 14px; color: #929292; margin-right: 6px;">未设置&nbsp;&gt;</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:0 20px 10px;">
+            <div><a class="button blue" onclick="hide_question_editor();">确定</a></div>
+        </div>
+    </div>
+    <div id="mod_attach" style="overflow: auto; display: none; background: rgb(255, 255, 255); position: absolute; width: 100%; top: 0; z-index: 400;">
+        <div style="background-color: #1ea0fa; color: #F7F7F7; line-height: 45px; font-size: 18px;">
+            <div style="cursor: pointer; display: inline;" onclick="hide_attach_editor(true);">
+                <span style="padding-left: 10px;">&lt;</span>
+                <span>返回</span>
+            </div>
+        </div>
+        <div id="attachs" style="padding-bottom: 20px;">
+            <div style="font-size: 12px; padding: 0 20px; color: #ABAFB2">
+                <div style="line-height: 28px;">
+                    <span class="bt_req">*</span>
+                    <span>显示条件</span>
+                </div>
+            </div>
+            <div class="page__content">
+                <div class="mod__title">
+                    <div class="mod__input">
+                        <textarea placeholder="请输入显示条件（每行一个，格式：“题号:值”。若题号中涉及小题号，用下划线“_”分割，例：“2_1:选项1”）"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="errorMessage"></div>
+        </div>
+        <div id="attachSetting" class="mod__setting">
+            <div class="mod__body">
+                <div id="q_attach_type" class="form_button" style="display: flex;">
+                    <h2>显示条件之间的关系</h2>
+                    <select class="ui-select-box" style="width: 25%;" title="">
+                        <option value="and">且</option>
+                        <option value="or">或</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div style="padding:0 20px 10px;">
+            <div><a class="button blue" onclick="hide_attach_editor();">确定</a></div>
+        </div>
+    </div>
+    <div id="shadow" style="display: none; width: 100%; height: 100%; background: rgb(0, 0, 0); position: absolute; z-index: 100; left: 0; top: 0; opacity: 0.5;"></div>
+    <div class="blue" style="line-height: 45px; text-align: center; cursor: pointer;">
+        <div><span onclick="save_survey();">保存问卷</span></div>
+    </div>
+    <div id="msg" style="width: 80%;height: 60%;left: 10%;display: none;border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 200;">
+        <div class="content" style="margin-top:91px;text-align: center;">
+            <span id="msg_text">正在提交问卷，请稍候……</span>
+        </div>
+    </div>
+    <div id="mpd" style="width: 80%; height: 60%; left: 10%; display: none; border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 200;">
+        <div style="position:relative;">
+            <a class="close_btn" onclick="hide_widget(this);"></a>
+        </div>
+        <div class="content" style="margin-top:20px;">
+            <div id="select_tags"></div>
+            <div class="save_btn" onclick="hide_widget(this);">
+                <a class="button_a" href="javascript:">确定</a>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript" src="../static/js/design.js"></script>
+</body>
+</html>

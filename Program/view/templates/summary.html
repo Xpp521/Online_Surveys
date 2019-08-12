@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1">
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="applicable-device" content="mobile"/>
+    <meta name="robots" content="noindex">
+    <title>{{ surveys[0].title }} - 统计&分析</title>
+    <link rel="stylesheet" href="../static/css/default.css">
+    <link rel="stylesheet" href="../static/css/summary.css">
+    <link rel="stylesheet" href="../static/css/selectpick.css">
+    <link rel="stylesheet" href="../static/css/single-item-count.css">
+    <link rel="stylesheet" href="../static/css/weui-for-work.min.css"/>
+    <link rel="stylesheet" href="../static/css/jqmobo.css"/>
+    <script type="text/javascript" src="../static/js/weui.min.js"></script>
+{#    <style>#}
+{#        .count_analyse_tab ul li {#}
+{#            width: 25%;#}
+{#        }#}
+{#    </style>#}
+    <script type="text/javascript" src="../static/js/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+<div class="inside-wrapper">
+    <div class="inside-head clearfix">
+        <div class="activity-box pull-left">
+            <select class="select-box" onchange="jump(this.value)">
+                {% for survey in surveys %}
+                    <option value={{ survey._id }}>{{ survey.title }}(ID:{{ survey._id }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="nav-show" id="toplabel">
+            <div class="nav-box clearfix">
+                <a class="nav-items pull-left clicked" href="javascript:">
+                    <label class="icon Answer2-icon"></label><br>
+                    <span>统计&amp;分析</span>
+                </a>
+                {#                <a class="nav-items pull-left" href="/wjx/activitystat/viewstatsummary.aspx?activity=29775017">#}
+                {#                    <label class="icon Answer1-icon"></label><br>#}
+                {#                    <span>查看下载答卷</span>#}
+                {#                </a>#}
+            </div>
+        </div>
+        <a href="/preview?id={{ surveys[0]._id }}" id="ctl02_hrefViewnew" target="_blank"
+           class="btnnew btn-default btn-lg btn-nobg view-btn-mini help-btn">预览问卷</a>
+    </div>
+    <div class="count_analyse_tab">
+{#        <ul id="tabmenu" class="clearfix">#}
+{#            <li id="ctl02_ContentPlaceHolder1_ViewReport1_liDefault" class=""><a#}
+{#                    href="javascript:void(0);"><span>默认报告</span></a></li>#}
+{#            <li id="liFenLei"><a href="javascript:void(0);" id="ctl02_ContentPlaceHolder1_ViewReport1_hrefFenLei"><span>分类统计</span></a>#}
+{#            </li>#}
+{#            <li id="liJiaoCha"><a href="javascript:void(0);"#}
+{#                                  id="ctl02_ContentPlaceHolder1_ViewReport1_hrefJiaoCha"><span>交叉分析</span></a></li>#}
+{#            <li id="liQuery" style="border:none" class="cur"><a href="javascript:void(0);"#}
+{#                                                                id="ctl02_ContentPlaceHolder1_ViewReport1_hrefQuery"><span>自定义查询</span></a>#}
+{#            </li>#}
+{#        </ul>#}
+        <div id="divQuery" style="padding: 10px 10px 10px 10px;" class="zdycx">
+            <div class="playSet" style="border-bottom:0px;padding-bottom:0">
+                <div class="head clearfix">
+                    <div class="htit hasChart pull-left">
+                        <i class="icon icon-self"></i>
+                        <span>自定义查询</span>
+                    </div>
+                </div>
+                <div class="condition-box">
+                    <!-- 箭头-->
+                    <div class="arrow"><i></i></div>
+                    <!--我的筛选-->
+                    <div class="cont">
+{#                        <div class="my-check clearfix">#}
+{#                            <div class="check-text-box">#}
+{#                                <span class="my-check-text" href="">#}
+{#                                    <span id="ctl02_ContentPlaceHolder1_ViewReport1_spanQuerytext1">#}
+{#                                        我的筛选#}
+{#                                    </span>#}
+{#                                    <i class="icon"></i>#}
+{#                                </span>#}
+{#                                <ul id="ctl02_ContentPlaceHolder1_ViewReport1_ddlSaveQueryul"></ul>#}
+{#                            </div>#}
+{#                        </div>#}
+                        <div class="check-condition">
+                            <div class="condition-list">
+                                <div id="divCondition" class="condition-item clearfix">
+                                    <div class="condition-cont">
+                                        <select class="condition_k" onchange="changeCondition(this)">
+                                            <option value="" selected style="display: none;">请选择题目</option>
+                                            <optgroup label="———————问卷题目———————"></optgroup>
+                                            {% for question in questions %}
+                                                {% if question.type == '多项填空' %}
+                                                    <optgroup label={{ question.num|int }}.[填空题]>
+                                                        {% set ns = namespace(index=1) %}
+                                                        {% for pice in question.title %}
+                                                            {% if '_' != pice|truncate(1, True, '', 0) %}
+                                                                <option value={{ question.num|int }}_{{ ns.index }} type="多项填空" is_required={{ question.is_required|int }}>
+                                                                    ({{ ns.index }}).{{ pice }}</option>
+                                                                {% set ns.index = ns.index + 1 %}
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </optgroup>
+                                                {% elif question.type == '矩阵单选' %}
+                                                    <optgroup label={{ question.num|int }}.{{ question.title }}[矩阵单选题]>
+                                                        {% for title in question.titles %}
+                                                            <option value={{ question.num|int }}_{{ loop.index }} type="矩阵单选" is_required={{ question.is_required|int }}>
+                                                                ({{ loop.index }}).{{ title }}</option>
+                                                        {% endfor %}
+                                                    </optgroup>
+                                                {% elif question.type == '文件' %}
+                                                {% else %}
+                                                    <option value={{ question.num|int }} type={{ question.type }} is_required={{ question.is_required|int }}>{{ question.num|int }}.{{ question.title }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <optgroup label="———————填写记录———————">
+                                                {% if not surveys[0].public %}
+                                                    <option value="user_id" type="user_id">● 用户</option>
+                                                {% endif %}
+                                                <option value="source" type="source">● 来源</option>
+                                                <option value="submit_time" type="submit_time">● 提交时间</option>
+                                            </optgroup>
+                                        </select>
+
+                                        <select class="condition_operator">
+                                            <option value="" selected style="display: none;">请选择操作符</option>
+                                            <option value="e" style="display: none;">等于</option>
+                                            <option value="ne" style="display: none;">不等于</option>
+                                            <option value="exists" style="display: none;">存在</option>
+                                            <option value="nexists" style="display: none;">不存在</option>
+                                            <option value="regex" style="display: none;">包含</option>
+                                            <option value="pregex" style="display: none;">等于</option>
+                                            <option value="gt" style="display: none;">大于</option>
+                                            <option value="lt" style="display: none;">小于</option>
+                                            <option value="gte" style="display: none;">大于等于</option>
+                                            <option value="lte" style="display: none;">大于等于</option>
+                                            <option value="between" style="display: none;">介于</option>
+                                            <option value="in" style="display: none;">多选</option>
+                                        </select>
+
+                                        <span class="condition_v">
+                                            <span style="display: none;" name="vsubmit_time">
+                                                范围：<input type="text" readonly="readonly" onclick="show_calender(this)"/>
+                                                ~<input type="text" readonly="readonly" onclick="show_calender(this)" onchange="check_date(this)"/>
+                                            </span>
+
+                                            <input name="v0" type="text" style="display:none;width: 124px;padding-left:4px; height: 28px; border: solid 1px #a9a8a8; margin-top: 1px;vertical-align:top\0;">
+
+                                            {% for question in questions %}
+                                                {% if question.type == '单项选择' or question.type == '下拉单选' %}
+                                                    <select style="display: none;" name="v{{ question.num|int }}">
+                                                    <option value="" selected style="display: none;">请选择</option>
+                                                        {% for option in question.options %}
+                                                            <option value={{ option }}>{{ option }}</option>
+                                                        {% endfor %}
+                                                    </select>
+
+                                                    <span style="vertical-align: top;line-height: 22px;display: none;"
+                                                          name="v{{ question.num|int }}">
+                                                    {% for option in question.options %}
+                                                        <input type="checkbox" value="{{ option }}"/>
+                                                        <span>{{ option }}</span>
+                                                    {% endfor %}
+                                                    </span>
+                                                {% endif %}
+
+                                                {% if question.type == '矩阵单选' %}
+                                                    <select style="display: none;" name="v{{ question.num|int }}">
+                                                    <option value="" selected style="display: none;">请选择</option>
+                                                        {% for option in question.options %}
+                                                            <option value={{ option.text }}>{{ option.text }}</option>
+                                                        {% endfor %}
+                                                    </select>
+
+                                                    <span style="vertical-align: top;line-height: 22px;display: none;"
+                                                          name="v{{ question.num|int }}">
+                                                    {% for option in question.options %}
+                                                        <input type="checkbox" value="{{ option.text }}"/>
+                                                        <span>{{ option.text }}</span>
+                                                    {% endfor %}
+                                                    </span>
+                                                {% endif %}
+
+                                                {% if question.type == '多级下拉' %}
+                                                    <input type="text" style="height: 28px;display: none;"
+                                                           readonly="readonly"
+                                                           onclick="show_mpd(this, {{ question.layers }}, {{ question.options }})"
+                                                           name="v{{ question.num|int }}"/>
+                                                    {#                                                  <img src="../static/image/m-drop-down@2x.png" style="position:relative;top:3px;left:3px;">#}
+                                                {% endif %}
+
+                                                {% if question.type == '日期' %}
+                                                    <span style="display: none;" name="v{{ question.num|int }}">
+                                                        范围：<input type="text" readonly="readonly"
+                                                                  name="v{{ question.num|int }}_1"
+                                                                  onclick="show_calender(this)"/>~<input type="text" readonly="readonly" name="v{{ question.num|int }}_2" onclick="show_calender(this)" onchange="check_date(this)"/>
+                                                    </span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+
+                                        <span style="width: 1%;">
+                                            <a class="del-condition" href="javascript:void(0)"
+                                               onclick="delCondition(this)"><i class="icon icon-del-condition"
+                                                                               style="margin-left:5px;"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="add-condition" id="btnAddQuery" onclick="addCondition()">
+                                    <i class="icon icon-add-condition"></i>增加条件
+                                </div>
+
+                                <div class="control-condition clearfix">
+                                    <input type="button" value="查询" onclick="query();" class="query-btn">
+                                    <span id="ctl02_ContentPlaceHolder1_ViewReport1_divQueryData">
+                                        <p class="result-text">
+{#                                            筛选出<span id="filterNum">1</span>条/共<span id="totalNum">1</span>条#}
+                                        </p>
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="divQueryMsg" style="color: Red; margin-top: 5px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="count_analyse_container" style="position:relative;">
+        <div id="divFilter" class="mrbg">
+            <div class="playSet">
+                <div class="head clearfix">
+                    <div class="htit pull-left">
+                        <i></i>
+                        <span id="queryResult">查询结果</span>
+                    </div>
+                    <div class="pull-right">
+                        <a href="javascript:" style="padding: 0 5px;" class="btn1" onclick="download_xlsx();">导出到Excel</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="padding: 10px 10px 0 10px;">
+        <div id="ctl02_ContentPlaceHolder1_ViewStatSummary1_noempty" class="check-result-box">
+            <div id="divtableSummary" class="check-result" style="overflow-x: auto; white-space: nowrap; overflow-y: hidden;">
+                <!--[if lt ie 8]><div style='+zoom:1;'><![endif]-->
+                <table id="resultTable" class="the-table" border="0">
+                    <thead>
+                        <tr id="ctl02_ContentPlaceHolder1_ViewStatSummary1_trTitle">
+                            <td>ID</td>
+                            <td>提交时间</td>
+                            <td>来源</td>
+    {#                        {% if 0 == surveys[0].public|int %}#}
+    {#                            <td>提交用户</td>#}
+    {#                        {% endif %}#}
+    {#                        <td><a href="javascript:" style="color:#808080;" title="提示：由于IP存在变化的情况，因此根据IP获取的省市无法保证100%准确。">来自IP</a></td>#}
+                            <td>操作</td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <!--[if lt ie 8]></div><![endif]-->
+            </div>
+        </div>
+    </div>
+    <div style="padding: 0 10px 10px 10px;">
+        <div class="table-control" id="divPageFooter">
+            <div class="paging">
+                <a id="pre_page" onclick="prev_page(this, true)" title="首页">{{ '<<'|safe }}</a>
+                <a id="pre_page" onclick="prev_page(this)" title="上一页">{{ '<'|safe }}</a>
+                <span id="page">?</span>/<span id="total_page">?</span>
+                <a id="next_page" onclick="next_page(this)" title="下一页">{{ '>'|safe }}</a>
+                <a id="pre_page" onclick="next_page(this, true)" title="尾页">{{ '>>'|safe }}</a>每页显示
+                <select title="设置每页的数据量" onchange="changeDataCount(this);">
+                    <option value="3">3</option>
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>条数据
+            </div>
+        </div>
+    </div>
+
+    <div id="shadow" style="display: none; width: 100%; height: 100%; background: rgb(0, 0, 0); position: absolute; z-index: 100; left: 0; top: 0; opacity: 0.5;" onclick="closeWidget(this)"></div>
+    <div id="mpdDiv" style="display: none; border-radius: 8px; background: rgb(255, 255, 255); position: absolute; z-index: 200;">
+        <div style="position:relative;">
+            <a id="mpdClose" style="background:url(../static/image/bt_closed.gif) no-repeat;width:30px;height:30px;margin:-15px -18px 0 0;display:inline;float:right;cursor:pointer;position:absolute;right:0;" onclick="closeWidget(this)"></a>
+        </div>
+        <div id="mpd" class="content" style="margin-top:20px;">
+            <div id="select_tags"></div>
+            <div class="save_btn">
+                <a class="button_a" href="javascript:">确定</a>
+            </div>
+        </div>
+    </div>
+    <div id="surveyView" style="display: none;height: 80%;width: 50%;position: absolute; top: 15%;left: 25%; background-color: rgb(255, 255, 255); z-index: 10003; border-radius: 10px;">
+        <div style="position: relative;">
+            <a  style="background:url(../static/image/bt_closed.gif) no-repeat;width:30px;height:30px;margin:-15px -18px 0 0;display:inline;float:right;cursor:pointer;position:absolute;right:0;" onclick="closeWidget(this)"></a>
+        </div>
+        <div>
+        </div>
+        <div style="height: 100%;width: 100%;overflow: auto;">
+{#            <div id="ViewJoinActivity1_divJoin">#}
+{#                <div class="query__data-details">#}
+{#                    <dl>#}
+{#                        <dt>ID：</dt>#}
+{#                        <dd><strong>6</strong></dd>#}
+{#                    </dl>#}
+{#                    <dl>#}
+{#                        <dt>来源IP：</dt>#}
+{#                        <dd>144.48.211.152（北京-北京）</dd>#}
+{#                    </dl>#}
+{#                    <dl>#}
+{#                        <dt>来源渠道：</dt>#}
+{#                        <dd style="max-width: 240px;word-break: break-all;word-wrap: break-word; ">#}
+{#                            链接(http://www.wjx.cn/)#}
+{#                        </dd>#}
+{#                    </dl>#}
+{#                    <dl>#}
+{#                        <dt>填写时间：</dt>#}
+{#                        <dd>2018/11/21 19:55:47</dd>#}
+{#                    </dl>#}
+{#                    <dd align="left"></dd>#}
+{#                </div>#}
+{#            </div>#}
+            {% for question in questions %}
+                    <div class="field ui-field-contain" id="div{{ loop.index }}" type={{ question.type }}>
+                        {% if question.type == '单项选择' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="ui-select">
+                                <span id="q{{ question.num|int }}">题目答案</span>
+                            </div>
+                        {% endif %}
+                        {% if question.type == '单项填空' %}
+                            <div class='field-label'>{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="beginner_problem">
+                                <textarea cols="" rows="" title="" readonly="readonly" style="height: {{ question.rows*43.64 }}px" id="q{{ question.num|int }}"></textarea>
+                            </div>
+                        {% endif %}
+                        {% if question.type == '多项填空' %}
+                            <div class="field-label">
+                                <div style="position:relative;">
+                                    <div style="position:absolute;top:4px;">{{ loop.index }}.</div>
+                                    <div style="margin-left:30px;">
+                                        {% set ns = namespace(model='<span style="padding:5px 4px;font-size:14px;font-weight:600;" class="ui-input-text" id="id"></span>', index=1, content='') %}
+                                        {% for pice in question.title %}
+                                            {% if '_' == pice|truncate(1, True, '', 0) %}
+                                                {% set pice = ns.model|replace('"id"', 'q%d_%d'|format(question.num, ns.index)) %}
+                                                {% set ns.index = ns.index + 1 %}
+                                            {% else %}
+                                                {% set pice = pice|replace(' ', '&nbsp;') %}
+                                            {% endif %}
+                                            {% set ns.content = '%s%s'|format(ns.content, pice) %}
+                                        {% endfor %}
+                                        {{ ns.content|replace('/enter', '<div style="margin-top:8px;"></div>')|safe }}
+                                        {% if question.is_required %}<span class="req">*</span>{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if question.type == '下拉单选' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="ui-select">
+                                <span id="q{{ question.num|int }}">题目答案</span>
+                            </div>
+                        {% endif %}
+                        {% if question.type == '日期' %}
+                            <div class="field-label">{{ loop.index }}. {{ question.title }}
+                                {% if question.is_required %}
+                                    <span class="req">*</span>
+                                {% endif %}
+                            </div>
+                            <div class="ui-select">
+                                <span id="q{{ question.num|int }}">题目答案</span>
+                            </div>
+                        {% endif %}
+                        {% if question.type == '矩阵单选' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <table style="width: 100%;">
+                                <tbody>
+                                <tr>
+                                {% for title in question.titles %}
+                                    {% if loop.index % 2 == 0 %}
+                                        <tr style="line-height: 30px;">
+                                    {% else %}
+                                        <tr style="line-height: 30px;background-color: #F5F5F5;">
+                                    {% endif %}
+                                    <th style="text-align: left;font-weight: normal;">{{ title }}</th>
+                                    <td id="q{{ question.num|int }}_{{ loop.index }}" style="width: 40%;">test</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                        {% if question.type == '文件' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="ui-select">
+                                <span id="q{{ question.num|int }}" class="File">文件信息</span>
+                            </div>
+                            <a href="" target="_blank">
+                                <div style="padding-top: 1px;"></div>
+                                <div>点击下载</div>
+                            </a>
+                        {% endif %}
+                        {% if question.type == '多级下拉' %}
+                            <div class="field-label">{{ loop.index }}.
+                                {{ question.title }}{% if question.is_required %}<span class="req">*</span>{% endif %}
+                            </div>
+                            <div class="ui-select">
+                                <span id="q{{ question.num|int }}">题目答案</span>
+                            </div>
+                        {% endif %}
+                    </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<script type="text/javascript">let survey_id = {{ surveys[0]._id|tojson }};</script>
+<script type="text/javascript" src="../static/js/summary.js"></script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1,user-scalable=no">
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="applicable-device" content="mobile"/>
+    <title>重置密码</title>
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+        body {
+            font-size: 16px;
+            -webkit-user-select: none;
+            -webkit-text-size-adjust: none;
+            font-family: "Microsoft Yahei", helvetica;
+            background: #fff;
+            color: #333;
+            position: relative;
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+        *, *:after, *:before {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        ul, li {
+            list-style: none;
+        }
+        a, button, label, textarea, div, select, option {
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            outline: none;
+        }
+        input {
+            outline: none;
+        }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        appearance: none;
+        margin: 0;
+        -moz-appearance: textfield;
+        }
+        a, a:visited {
+            text-decoration: none;
+            color: #45AFE3;
+        }
+        fieldset {
+            border: none;
+        }
+        #toptitle {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 26px 10px 12px;
+            width: 100%;
+            color: #1ea0fa;
+        }
+        .htitle {
+            font-size: 24px;
+            line-height: 32px;
+            font-weight: bold;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .field {
+            clear: both;
+            padding: 10px 14px;
+            margin: 10px 6px;
+            border: 1px solid #ffffff;
+        }
+        .field-label {
+            position: relative;
+            font-size: 16px !important;
+            font-weight: bold;
+            padding: 0 0 8px 0 !important;
+            display: block;
+            word-wrap: break-word;
+            /*overflow: hidden;*/
+        }
+        .ui-input-text {
+            border: 1px solid #e0e0e0;
+            margin: 5px 0;
+            background-color: #fff;
+            padding: 0;
+            border-radius: 4px;
+        }
+        .ui-input-text input, .ui-input-text textarea {
+            width: 100%;
+            background-color: #fff;
+            border: none !important;
+            border-radius: 2px;
+            padding: 10px;
+            font-size: 14px;
+            display: inline-block;
+            margin: 0;
+            -webkit-appearance: none;
+        }
+        .ui-text input:focus, .ui-input-text input:focus, .ui-input-text textarea:focus {
+            /*     box-shadow: 0 0 12px #3388cc; */
+            outline: none;
+        }
+        .errorMessage {
+            position: relative;
+            padding-left: 12px;
+            color: Red;
+            line-height: 38px;
+            background-color: #ffe5e0;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 9px;
+            transition: all 1s ease 0s;
+        }
+        .blue, blue:visited {
+            color: #F7F7F7;
+            background: #1ea0fa;
+        }
+        .button {
+            width: 100%;
+            display: block;
+            margin: 10px 0;
+            outline: none;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            font-size: 1.2em;
+            padding: 9px 0 9px;
+            border-radius: .2em;
+        }
+        .formfield {
+            display: block;
+            padding: 10px 0 10px;
+            margin: 0 10px 16px;
+            clear: both;
+            border-bottom: 1px dashed #ccc;
+        }
+        .description {
+            font-size: 14px;
+            line-height: 24px;
+        }
+    </style>
+</head>
+<body>
+<form style="overflow:hidden;" action="">
+    <div><h1 class="htitle" id="toptitle">在线问卷系统 - 重置密码</h1></div>
+    <div class="formfield"><span class="description">尊敬的用户：{{ user_name }}，请重置您的登录密码。</span></div>
+    <div>
+        <fieldset class='fieldset'>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>新密码：</div>
+                <div class='ui-input-text' style='position:relative;'><input title="新密码" type='password' id='pwd' placeholder="新密码" onclick="enter_submit(event);"/></div>
+                <div class='errorMessage'></div>
+            </div>
+            <div class='field ui-field-contain'>
+                <div class='field-label'>确认密码：</div>
+                <div class='ui-input-text' style='position:relative;'><input title="确认密码" type='password' id='confirm_pwd' placeholder="再输入一次密码" onclick="enter_submit(event);"/></div>
+                <div class='errorMessage'></div>
+            </div>
+            <div style="padding:0 20px 10px;">
+                <div><a class="button blue" onclick="submit();">提交</a></div>
+            </div>
+        </fieldset>
+    </div>
+</form>
+<script id="useless" type="text/javascript">let token = {{ token|tojson }};let user_name = {{user_name|tojson}};</script>
+<script type="text/javascript">
+    const pwd = document.getElementById('pwd');
+    const confirm_pwd = document.getElementById('confirm_pwd');
+    const xhr = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    xhr.responseType = 'json';
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                let response = xhr.response;
+                alert(response['msg']);
+                if (response['code'] === 1) {
+                    location.replace(`/login?last_username=${user_name}`);
+                }
+            }
+        }
+    };
+    pwd.focus();
+    document.body.removeChild(document.getElementById('useless'));
+    function submit() {
+        let password = pwd.value;
+        if (password) {
+            pwd.parentNode.nextElementSibling.innerHTML = '';
+        } else {
+            pwd.parentNode.nextElementSibling.innerHTML = '请输入新密码';
+            return;
+        }
+        if (confirm_pwd.value) {
+            confirm_pwd.parentNode.nextElementSibling.innerHTML = '';
+        } else {
+            confirm_pwd.parentNode.nextElementSibling.innerHTML = '请输入新密码';
+            return;
+        }
+        if (confirm_pwd.value === password) {
+            confirm_pwd.parentNode.nextElementSibling.innerHTML = '';
+        } else {
+            confirm_pwd.parentNode.nextElementSibling.innerHTML = '2次输入的密码不一致';
+            return;
+        }
+        xhr.open('PUT', '/users');
+        xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        xhr.send(`p=${JSON.stringify({'pwd': password})}&token=${token}`);
+    }
+    function enter_submit(e) {
+        if (e.key === 'Enter' || e.which === 13) {
+            submit();
+        }
+    }
+</script>
+</body>
+</html>
