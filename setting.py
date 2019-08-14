@@ -72,13 +72,13 @@ SMTP_HOST = 'smtp.qq.com'
 SMTP_PORT = '465'
 
 # 发送邮件的邮箱账号
-EMAIL_ACCOUNT = '3376459813@qq.com'
+EMAIL_ACCOUNT = '1234567890@qq.com'
 
 # 发送邮件的邮箱昵称
 EMAIL_ACCOUNT_NAME = '在线问卷系统'
 
 # 授权码
-EMAIL_AUTH_CODE = 'sissbbaxqcoachdi'
+EMAIL_AUTH_CODE = 'kfodaofnadksfkda'
 # ——————————————邮件参数设置：结束——————————————
 
 # 用于生成注册码和验证码的字符集

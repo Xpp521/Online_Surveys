@@ -311,7 +311,7 @@
         prevent_slide(false);
     }
     function share_survey(survey_id) {
-        xhr.open('GET', `/share?id=${survey_id}&time=${parseInt(qr_code_time.value)}`);
+        xhr.open('GET', `/share_msg?id=${survey_id}&time=${parseInt(qr_code_time.value)}`);
         xhr.send();
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 1) {
