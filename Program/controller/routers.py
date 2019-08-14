@@ -19,6 +19,11 @@ from setting import REGISTER_STATUS
 from setting import FILE_FOLDER, DOMAIN, KEY1, KEY2
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_file(join(app.root_path, 'view', 'static', 'image', 'favicon.ico'))
+
+
 def show_msg(face, title, target_page, href, message=None, second=3):
     if message is None:
         return render_template('msg.html', face=face, title=title, target_page=target_page, href=href, second=second)
