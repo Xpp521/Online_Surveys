@@ -16,7 +16,7 @@ class Config:
 
     # MongoDB数据库URI
     # 格式：'mongodb://用户名:密码@地址:端口号/数据库名'。
-    MONGO_URI = 'mongodb://flask:flaskmongodb@localhost:27017/flask'
+    MONGO_URI = 'mongodb://admin:12345678@localhost:27017/database'
 
 
 # 主机地址
@@ -27,7 +27,7 @@ PORT = 5000
 
 # 外网地址（域名）
 # 从内网穿透软件中获取。
-DOMAIN = 'http://3s.dkys.org:18293'
+DOMAIN = 'http://3q.dkegys.org'
 
 # Session过期时间
 # 代表用户保持登录状态的时间。
@@ -52,7 +52,6 @@ REGISTER_CODE_LENGTH = 5
 REGISTER_CODE_COUNT = 10
 
 # ——————————————密匙设置：开始——————————————
-# 为防止破解建议经常更换，复杂度越高越好，但长度不能超过32位。
 
 # 密匙1
 # 更换后会导致已经分享的二维码失效。
@@ -78,7 +77,7 @@ EMAIL_ACCOUNT = '1234567890@qq.com'
 EMAIL_ACCOUNT_NAME = '在线问卷系统'
 
 # 授权码
-EMAIL_AUTH_CODE = 'kfodaofnadksfkda'
+EMAIL_AUTH_CODE = ''
 # ——————————————邮件参数设置：结束——————————————
 
 # 用于生成注册码和验证码的字符集
